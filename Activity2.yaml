@@ -1,0 +1,29 @@
+---
+- hosts: app
+  become: yes
+  tasks:
+  - name: Update all the packages available on the system
+    yum:
+      name: '*'
+      state: latest
+  - name: Install two packages called nginx and firewalld onto the system
+    yum:
+        name: "{{ item }}"
+        state: present
+    loop:
+        - nginx
+        - firewalled
+  - name: Make sure that nginx is up and running
+    service:
+        name: nginx
+        state: started
+        enabled: yes
+  - name: Make sure that firewalld is up and running
+    service:
+        name: firewalld
+        state: started
+        enabled: yes
+  - name: Make sure that port 80 is opened on firewalld
+    firewalld:
+        port: 80/tcp
+        state: enabled

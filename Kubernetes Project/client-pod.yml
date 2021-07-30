@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Pod
+metadata:
+  name: client-pod
+  lebels:
+    componet: webwebapisimpleblog 
+spec:
+  containers:
+    - name: client
+      image: axelsilverdew/complex_client
+      ports:
+        - containerPort: 3000
+
+    - name: postgres
+      image: postgres
+      ports:
+        - containerPort: 5432
+      volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+          subPath: postgres
+      env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pgpassword
+              key: POSTGRES_PASSWORD
+  container:
+    - name: api
+      image: axelsilverdew/complex_client
+      ports:
+        - '3000:3000'
+      depends_on:
+        - postgres
+      environment:
+        - POSTGRES_HOST=postgres
+        - POSTGRES_PORT=5432
+        - POSTGRES_USERNAME=postgres
+        - POSTGRES_PASSWORD=postgres_password
+        - POSTGRES_DB=postgres
+        - PORT=3000  
